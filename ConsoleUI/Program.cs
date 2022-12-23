@@ -2,6 +2,7 @@
 using Core.Entities;
 using DataAccess.Concrete.EntityFramework;
 using DataAccess.Concrete.InMemory;
+using DataAccess.Migrations;
 using Entities.Concrete;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,15 +31,28 @@ using Microsoft.EntityFrameworkCore;
 //Araba günlük fiyatı 0'dan büyük olmalıdır.
 
 
+//var customers = new List<Customer>()
+//{
+//    new Customer(){UserId = 8, CompanyName="Wawa Car"},
+//    new Customer(){UserId = 9, CompanyName="Sahibinden"},
+//    new Customer(){UserId = 10, CompanyName="Sixt"},
+
+////};
+
 
 //Data Transformation Object
 
 //CarContext context= new CarContext();
 
-CarDetails();
+//CarDetails();
 
 //InsertData();
 
+//AddCustomer(customers);
+
+//RentCar();
+
+GetCarsByBrandId(13);
 static void InsertData()
 {
     var cars = new List<Car>()
@@ -103,8 +117,41 @@ static void CarDetails()
     CarManager carManager = new CarManager(new EfCarDal());
     var carDetails = carManager.GetCarDetails();
 
-    foreach (var car in carDetails)
+    foreach (var car in carDetails.Data)
     {
         Console.WriteLine($" BrandName: {car.BrandName} **** Car Name: {car.CarName} **** ColorName: {car.ColorName} **** DailyPrice: {car.DailyPrice}\n");
+    }
+}
+
+
+static void AddCustomer(List<Customer> customers)
+{
+    CustomerManager customerManager = new CustomerManager(new EfCustomerDal());
+
+    foreach (var customer in customers)
+    {
+        var result = customerManager.Add(customer);
+        Console.WriteLine(result.Message);
+    }
+}
+
+
+static void RentCar()
+{
+    RentalManager rentalManager = new RentalManager(new EfRentalDal());
+    Rental rental = new Rental() { CarId=8, CustomerId=1, RentDate=new DateTime(2022,12, 5), ReturnDate=new DateTime(2022,12, 6)};
+
+    var result = rentalManager.Add(rental);
+    Console.WriteLine(result.Message);
+}
+
+static void GetCarsByBrandId(int id)
+{
+    CarManager carManager = new CarManager(new EfCarDal());
+
+    var result = carManager.GetCarsByBrandId(id);
+    foreach(var item in result.Data)
+    {
+        Console.WriteLine(item.BrandId);
     }
 }
